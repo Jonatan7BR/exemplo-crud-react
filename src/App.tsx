@@ -1,26 +1,52 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Suspense, lazy, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "./redux/hooks"
+import { changeTheme } from "./redux/reducers/themeSlice";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Header from "./components/Header";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+import './App.scss';
+
+const App = (): JSX.Element => {
+    const darkModeOn = useAppSelector(state => state.theme.darkModeOn);
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        let userPrefersDarkMode = false;
+        const themePreference = localStorage.getItem('darkMode');
+        if (themePreference !== null) {
+            userPrefersDarkMode = themePreference === '1';
+        } else {
+            userPrefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
+        dispatch(changeTheme(userPrefersDarkMode));
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (darkModeOn) {
+            document.body.classList.remove('lightmode');
+            document.body.classList.add('darkmode');
+            document.documentElement.style.setProperty('color-scheme', 'dark');
+            localStorage.setItem('darkMode', '1');
+        } else {
+            document.body.classList.remove('darkmode');
+            document.body.classList.add('lightmode');
+            document.documentElement.style.setProperty('color-scheme', 'light');
+            localStorage.setItem('darkMode', '0');
+        }
+    }, [darkModeOn]);
+
+    const Home = lazy(() => import('./pages/Home'));
+
+    return (
+        <BrowserRouter>
+            <Header />
+            <Suspense>
+                <Routes>
+                    <Route index element={<Home />} />
+                </Routes>
+            </Suspense>
+        </BrowserRouter>
+    );
+};
 
 export default App;
