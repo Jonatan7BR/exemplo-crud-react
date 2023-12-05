@@ -13,6 +13,7 @@ body {
         --pagination-button-text: #000;
         --pagination-button-bg: #ccc;
         --pagination-button-active-text: #c0c;
+        --table-border: #000;
     }
 
     &.darkmode {
@@ -25,5 +26,6 @@ body {
         --pagination-button-text: #fff;
         --pagination-button-bg: #444;
         --pagination-button-active-text: #0ee;
+        --table-border: #FFF;
     }
 }
