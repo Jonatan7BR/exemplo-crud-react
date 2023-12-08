@@ -19,6 +19,15 @@ body {
     .serif, h1, h2 {
         font-family: var(--serif);
     }
+
+    main {
+        display: block;
+        max-width: 1200px;
+        margin: {
+            left: auto;
+            right: auto;
+        }
+    }    
 }
 
 ._nomargin {

@@ -40,11 +40,13 @@ const App = (): JSX.Element => {
     return (
         <BrowserRouter>
             <Header />
-            <Suspense>
-                <Routes>
-                    <Route index element={<Home />} />
-                </Routes>
-            </Suspense>
+            <main>
+                <Suspense>
+                    <Routes>
+                        <Route index element={<Home />} />
+                    </Routes>
+                </Suspense>
+            </main>
         </BrowserRouter>
     );
 };
