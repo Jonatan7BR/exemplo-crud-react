@@ -36,6 +36,7 @@ const App = (): JSX.Element => {
     }, [darkModeOn]);
 
     const Home = lazy(() => import('./pages/Home'));
+    const Details = lazy(() => import('./pages/Details'));
 
     return (
         <BrowserRouter>
@@ -44,6 +45,8 @@ const App = (): JSX.Element => {
                 <Suspense>
                     <Routes>
                         <Route index element={<Home />} />
+                        <Route path="editar/:id" element={<Details />} />
+                        <Route path="novo" element={<Details />} />
                     </Routes>
                 </Suspense>
             </main>

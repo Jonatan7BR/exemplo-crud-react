@@ -1,9 +1,26 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { STATES } from "../utils/states";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
+import { cpfValid, phoneValid } from "../utils/validation";
+import { Person } from "../models/person";
+import moment from "moment";
+
+import './Details.scss';
+
+const FAKE_DATA: Person = {
+    id: 1,
+    name: 'Olivia Analu Moreira',
+    cpf: '84427553303',
+    birthday: moment('1997-06-24').toDate(),
+    email: 'oliviaanalumoreira@advogadostb.com.br',
+    phone: '48988129805',
+    city: 'Florianópolis',
+    state: 'SC'
+  };
 
 const Details = (): JSX.Element => {
     const { id } = useParams();
+    const navigate = useNavigate();
 
     const title = id ? 'Editar cadastro' : 'Cadastrar pessoa';
     const buttonLabel = id ? 'Atualizar' : 'Cadastrar';
@@ -18,10 +35,27 @@ const Details = (): JSX.Element => {
     const [city, setCity] = useState('');
     const [state, setState] = useState('');
 
-    const sendData = (event: FormEvent) => {
+    const sendData = (event: FormEvent): void => {
         event.preventDefault();
+        console.log(cpfValid(cpf));
         
+        if (!cpfValid(cpf) || !phoneValid(phone)) {
+            return;
+        }
+        navigate('/');
     };
+
+    useEffect(() => {
+        if (id) {
+            setName(FAKE_DATA.name);
+            setCpf(FAKE_DATA.cpf);
+            setBirthday(moment(FAKE_DATA.birthday).format('YYYY-MM-DD'));
+            setEmail(FAKE_DATA.email);
+            setPhone(FAKE_DATA.phone);
+            setCity(FAKE_DATA.city);
+            setState(FAKE_DATA.state);
+        }
+    }, [id]);
 
     return (
         <>
@@ -61,12 +95,12 @@ const Details = (): JSX.Element => {
                 <p>Estado:</p>
                 <div>
                     <select value={state} onChange={e => setState(e.target.value)} required>
-                        {states.map(s => <option value={s.abbr}>{s.name}</option>)}
+                        {states.map((s, i) => <option key={i} value={s.abbr}>{s.name}</option>)}
                     </select>
                 </div>
 
                 <div className="span2">
-                    <button type="submit">Enviar</button>
+                    <button type="submit">{buttonLabel}</button>
                 </div>
             </form>
         </>

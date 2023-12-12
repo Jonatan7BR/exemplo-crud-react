@@ -79,25 +79,29 @@ const Home = (): JSX.Element => {
             </div>
 
             <table className="peopletable">
-                <tr>
+              <thead>
+                  <tr>
                     <th>CPF</th>
                     <th>Nome</th>
                     <th>Cidade</th>
                     <th>&nbsp;</th>
-                </tr>
-                {peopleData.map(person => (
-                    <tr>
-                        <td>{cpfFormat(person.cpf)}</td>
-                        <td>{person.name}</td>
-                        <td>{person.city}, {person.state}</td>
-                        <td><button type="button" onClick={() => goToEditPage(person.id)}>Editar</button></td>
-                    </tr>
-                ))}
-                {peopleData.length === 0 && (
-                    <tr>
-                        <td colSpan={4}>Não há pessoas cadastradas.</td>
-                    </tr>
-                )}
+                  </tr>
+                </thead>
+                <tbody>
+                  {peopleData.map((person, i) => (
+                      <tr key={i}>
+                          <td>{cpfFormat(person.cpf)}</td>
+                          <td>{person.name}</td>
+                          <td>{person.city}, {person.state}</td>
+                          <td><button type="button" onClick={() => goToEditPage(person.id)}>Editar</button></td>
+                      </tr>
+                  ))}
+                  {peopleData.length === 0 && (
+                      <tr>
+                          <td colSpan={4}>Não há pessoas cadastradas.</td>
+                      </tr>
+                  )}
+                </tbody>
             </table>
         </>
     );
