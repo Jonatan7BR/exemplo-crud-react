@@ -2,13 +2,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { STATES } from "../utils/states";
 import { FormEvent, useEffect, useState } from "react";
 import { cpfValid, phoneValid } from "../utils/validation";
-import { Person, PersonBody } from "../models/person";
-import moment from "moment";
-
-import './Details.scss';
+import { PersonBody } from "../models/person";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { MessageType, sendMessage } from "../redux/reducers/messageSlice";
 import { getPerson, registerPerson, updatePerson } from "../api/people";
+
+import './Details.scss';
 
 const Details = (): JSX.Element => {
     const person = useAppSelector(state => state.people.person);
@@ -30,7 +29,7 @@ const Details = (): JSX.Element => {
     const [city, setCity] = useState('');
     const [state, setState] = useState('');
 
-    const sendData = (event: FormEvent): void => {
+    const sendData = async (event: FormEvent): Promise<void> => {
         event.preventDefault();
         
         if (!cpfValid(cpf)) {
@@ -52,12 +51,22 @@ const Details = (): JSX.Element => {
             state
         };
         if (id) {
-            dispatch(updatePerson({ id: +id, person: body }));
+            const result = await dispatch(updatePerson({ id: +id, person: body }));
+            if (updatePerson.fulfilled.match(result)) {
+                dispatch(sendMessage({ message: 'Dados atualizados com sucesso' }));
+                navigate('/');
+            } else {
+                dispatch(sendMessage({ message: 'Não foi possível atualizar os dados do cadastro.', messageType: MessageType.Error }));
+            }
         } else {
-            dispatch(registerPerson(body));
+            const result = await dispatch(registerPerson(body));
+            if (registerPerson.fulfilled.match(result)) {
+                dispatch(sendMessage({ message: 'Dados cadastrados com sucesso' }));
+                navigate('/');
+            } else {
+                dispatch(sendMessage({ message: 'Não foi possível realizar o cadastro dos dados.', messageType: MessageType.Error }));
+            }
         }
-
-        navigate('/');
     };
 
     useEffect(() => {

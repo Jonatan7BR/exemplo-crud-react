@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { getPeople } from "../api/people";
 
 import './Home.scss';
+import { MessageType, sendMessage } from "../redux/reducers/messageSlice";
 
 const Home = (): JSX.Element => {
     const peopleData = useAppSelector(state => state.people.people);
@@ -20,7 +21,11 @@ const Home = (): JSX.Element => {
     };
 
     useEffect(() => {
-      dispatch(getPeople());
+      dispatch(getPeople()).then(result => {
+        if (getPeople.rejected.match(result)) {
+          dispatch(sendMessage({ message: 'Ocorreu um erro ao carregar os dados', messageType: MessageType.Error }));
+        }
+      });
     }, [dispatch]);
 
     return (

@@ -1,4 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { getPeople } from "../../api/people";
 
 export enum MessageType {
     Success = 'success',
@@ -25,14 +26,13 @@ const messageSlice = createSlice({
             state.message = action.payload.message;
             state.messageType = action.payload.messageType || MessageType.Success;
             state.messageVisible = true;
-
-            setTimeout(() => {
-                state.messageVisible = false;
-            }, 5000);
+        },
+        closeMessage: (state, _: PayloadAction<void>): void => {
+            state.messageVisible = false;
         }
     }
 });
 
-export const { sendMessage } = messageSlice.actions;
+export const { sendMessage, closeMessage } = messageSlice.actions;
 
 export default messageSlice.reducer;
