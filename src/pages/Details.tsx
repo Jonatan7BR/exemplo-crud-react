@@ -2,23 +2,18 @@ import { useNavigate, useParams } from "react-router-dom";
 import { STATES } from "../utils/states";
 import { FormEvent, useEffect, useState } from "react";
 import { cpfValid, phoneValid } from "../utils/validation";
-import { Person } from "../models/person";
+import { Person, PersonBody } from "../models/person";
 import moment from "moment";
 
 import './Details.scss';
-
-const FAKE_DATA: Person = {
-    id: 1,
-    name: 'Olivia Analu Moreira',
-    cpf: '84427553303',
-    birthday: moment('1997-06-24').toDate(),
-    email: 'oliviaanalumoreira@advogadostb.com.br',
-    phone: '48988129805',
-    city: 'Florianópolis',
-    state: 'SC'
-  };
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { MessageType, sendMessage } from "../redux/reducers/messageSlice";
+import { getPerson, registerPerson, updatePerson } from "../api/people";
 
 const Details = (): JSX.Element => {
+    const person = useAppSelector(state => state.people.person);
+    const dispatch = useAppDispatch();
+
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -37,25 +32,54 @@ const Details = (): JSX.Element => {
 
     const sendData = (event: FormEvent): void => {
         event.preventDefault();
-        console.log(cpfValid(cpf));
         
-        if (!cpfValid(cpf) || !phoneValid(phone)) {
+        if (!cpfValid(cpf)) {
+            dispatch(sendMessage({ message: 'O número do CPF está inválido', messageType: MessageType.Error }));
             return;
         }
+        if (!phoneValid(phone)) {
+            dispatch(sendMessage({ message: 'O número de telefone está em um formato inválido', messageType: MessageType.Error }));
+            return;
+        }
+
+        const body: PersonBody = {
+            name,
+            cpf,
+            birthday,
+            email,
+            phone,
+            city,
+            state
+        };
+        if (id) {
+            dispatch(updatePerson({ id: +id, person: body }));
+        } else {
+            dispatch(registerPerson(body));
+        }
+
         navigate('/');
     };
 
     useEffect(() => {
         if (id) {
-            setName(FAKE_DATA.name);
-            setCpf(FAKE_DATA.cpf);
-            setBirthday(moment(FAKE_DATA.birthday).format('YYYY-MM-DD'));
-            setEmail(FAKE_DATA.email);
-            setPhone(FAKE_DATA.phone);
-            setCity(FAKE_DATA.city);
-            setState(FAKE_DATA.state);
+            if (!parseInt(id)) {
+                navigate('/');
+            }
+            dispatch(getPerson(+id));
         }
     }, [id]);
+
+    useEffect(() => {
+        if (person) {
+            setName(person.name);
+            setCpf(person.cpf);
+            setBirthday(person.birthday);
+            setEmail(person.email);
+            setPhone(person.phone);
+            setCity(person.city);
+            setState(person.state);
+        }
+    }, [person]);
 
     return (
         <>

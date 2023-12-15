@@ -5,6 +5,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Header from "./components/Header";
 
 import './App.scss';
+import Loader from "./components/Loader";
+import Snackbar from "./components/Snackbar";
 
 const App = (): JSX.Element => {
     const darkModeOn = useAppSelector(state => state.theme.darkModeOn);
@@ -39,18 +41,22 @@ const App = (): JSX.Element => {
     const Details = lazy(() => import('./pages/Details'));
 
     return (
-        <BrowserRouter>
+        <>
             <Header />
             <main>
-                <Suspense>
-                    <Routes>
-                        <Route index element={<Home />} />
-                        <Route path="editar/:id" element={<Details />} />
-                        <Route path="novo" element={<Details />} />
-                    </Routes>
-                </Suspense>
+                <BrowserRouter>
+                    <Suspense>
+                        <Routes>
+                            <Route index element={<Home />} />
+                            <Route path="editar/:id" element={<Details />} />
+                            <Route path="novo" element={<Details />} />
+                        </Routes>
+                    </Suspense>
+                </BrowserRouter>
             </main>
-        </BrowserRouter>
+            <Loader />
+            <Snackbar />
+        </>
     );
 };
 
