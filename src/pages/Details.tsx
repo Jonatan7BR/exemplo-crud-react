@@ -5,9 +5,10 @@ import { cpfValid, phoneValid } from "../utils/validation";
 import { PersonBody } from "../models/person";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { MessageType, sendMessage } from "../redux/reducers/messageSlice";
-import { getPerson, registerPerson, updatePerson } from "../api/people";
+import { getPerson, registerPerson, removePerson, updatePerson } from "../api/people";
 
 import './Details.scss';
+import ConfirmModal from "../components/ConfirmModal";
 
 const Details = (): JSX.Element => {
     const person = useAppSelector(state => state.people.person);
@@ -16,10 +17,14 @@ const Details = (): JSX.Element => {
     const { id } = useParams();
     const navigate = useNavigate();
 
+    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+    
     const title = id ? 'Editar cadastro' : 'Cadastrar pessoa';
     const buttonLabel = id ? 'Atualizar' : 'Cadastrar';
-
+    const deletable = !!id;
+    
     const states = STATES.sort((a, b) => a.name.localeCompare(b.name));
+    const deleteModalText = 'Deseja excluir este cadastro?';
 
     const [name, setName] = useState('');
     const [cpf, setCpf] = useState('');
@@ -69,6 +74,24 @@ const Details = (): JSX.Element => {
         }
     };
 
+    const confirmDelete = (): void => {
+        setDeleteModalVisible(true);
+    };
+
+    const deleteData = async (confirmed: boolean): Promise<void> => {
+        setDeleteModalVisible(false);
+        if (!confirmed || !id) {
+            return;
+        }
+        const result = await dispatch(removePerson(+id));
+        if (removePerson.fulfilled.match(result)) {
+            dispatch(sendMessage({ message: 'Dados excluídos com sucesso' }));
+            navigate('/');
+        } else {
+            dispatch(sendMessage({ message: 'Não foi possível excluir os dados', messageType: MessageType.Error }));
+        }
+    };
+
     useEffect(() => {
         if (id) {
             if (!parseInt(id)) {
@@ -76,7 +99,7 @@ const Details = (): JSX.Element => {
             }
             dispatch(getPerson(+id));
         }
-    }, [id]);
+    }, [id, dispatch, navigate]);
 
     useEffect(() => {
         if (person) {
@@ -132,10 +155,17 @@ const Details = (): JSX.Element => {
                     </select>
                 </div>
 
-                <div className="span2">
+                <div className="span2 button-row">
                     <button type="submit">{buttonLabel}</button>
+                    {deletable && <button type="button" onClick={() => confirmDelete()}>Excluir</button>}
                 </div>
             </form>
+
+            <ConfirmModal 
+                dialogText={deleteModalText}
+                visible={deleteModalVisible}
+                confirm={deleteData}
+            />
         </>
     )
 };
