@@ -1,5 +1,4 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { getPeople } from "../../api/people";
 
 export enum MessageType {
     Success = 'success',

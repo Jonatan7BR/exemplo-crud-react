@@ -16,7 +16,7 @@ const Snackbar = (): JSX.Element => {
                 dispatch(closeMessage());
             }, 5000);
         }
-    }, [visible]);
+    }, [visible, dispatch]);
 
     return visible ? (
         <div className="snack-bar-container">
