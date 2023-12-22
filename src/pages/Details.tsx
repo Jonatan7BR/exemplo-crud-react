@@ -96,6 +96,7 @@ const Details = (): JSX.Element => {
         if (id) {
             if (!parseInt(id)) {
                 navigate('/');
+                return;
             }
             dispatch(getPerson(+id));
         }
