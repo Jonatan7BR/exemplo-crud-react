@@ -5,8 +5,8 @@ import App from './App';
 
 const root = ReactDOM.createRoot(document.querySelector('#root') as HTMLDivElement);
 
-root.render((
-    <Provider store={store}>
-        <App />
-    </Provider>
-));
+root.render(
+	<Provider store={store}>
+		<App />
+	</Provider>
+);
